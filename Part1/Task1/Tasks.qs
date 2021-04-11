@@ -1,6 +1,7 @@
 namespace QCHack.Task1 {
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Intrinsic;
+    open Microsoft.Quantum.Arrays;
 
     // Task 1 (1 point). f(x) = 1 if x is divisible by 4
     //         
@@ -21,7 +22,30 @@ namespace QCHack.Task1 {
     // will be 1/√3|001⟩ ⊗ |1⟩ + 1/√3|100⟩ ⊗ |0⟩ + 1/√3|111⟩ ⊗ |0⟩.
     //
     operation Task1_DivisibleByFour (inputs : Qubit[], output : Qubit) : Unit is Adj+Ctl {
-        // ...
+        if Length(inputs) == 3 {
+            let pattern0 = [false, false, false];
+            let pattern1 = [false, false, true];
+            (ControlledOnBitString(pattern0, X))(inputs, output);
+            (ControlledOnBitString(pattern1, X))(inputs, output);
+        } elif Length(inputs) == 4 {
+            let pattern0 = [false, false, false, false];
+            let pattern1 = [false, false, false, true];
+            let pattern2 = [false, false, true, true];
+            (ControlledOnBitString(pattern0, X))(inputs, output);
+            (ControlledOnBitString(pattern1, X))(inputs, output);
+            (ControlledOnBitString(pattern2, X))(inputs, output);
+        } else {
+            let pattern0 = [false, false, false, false, false];
+            let pattern1 = [false, false, false, false, true];
+            let pattern2 = [false, false, false, true, true];
+            let pattern3 = [false, false, true, false, true];
+            let pattern4 = [false, false, true, true, true];
+            (ControlledOnBitString(pattern0, X))(inputs, output);
+            (ControlledOnBitString(pattern1, X))(inputs, output);
+            (ControlledOnBitString(pattern2, X))(inputs, output);
+            (ControlledOnBitString(pattern3, X))(inputs, output);
+            (ControlledOnBitString(pattern4, X))(inputs, output);
+        }
     }
 }
 

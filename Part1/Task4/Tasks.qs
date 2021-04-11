@@ -1,6 +1,7 @@
 namespace QCHack.Task4 {
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Intrinsic;
+    open Microsoft.Quantum.Arrays;
 
     // Task 4 (12 points). f(x) = 1 if the graph edge coloring is triangle-free
     // 
@@ -37,13 +38,28 @@ namespace QCHack.Task4 {
     // Hint: Remember that you can examine the inputs and the intermediary results of your computations
     //       using Message function for classical values and DumpMachine for quantum states.
     //
-    operation Task4_TriangleFreeColoringOracle (
-        V : Int, 
-        edges : (Int, Int)[], 
-        colorsRegister : Qubit[], 
-        target : Qubit
+    operation ColorEqualityOracle_Nbit (c0 : Qubit[], c1 : Qubit[], target : Qubit) : Unit is Adj+Ctl {
+        within {
+            for i in 0 .. Length(c0) - 1 {
+                CNOT(c0[i], c1[i]);
+            }
+        } apply {
+            (ControlledOnInt(0, X))(c1, target);
+        }
+    }
+    operation Task4_TriangleFreeColoringOracle (V : Int, edges : (Int, Int)[], colorsRegister : Qubit[], target : Qubit
     ) : Unit is Adj+Ctl {
-        // ...
+        let edgesNumber = Length(edges);
+        use conflicts = Qubit[edgesNumber];
+        within {
+            for i in 0 .. edgesNumber - 1 {
+                let (v0, v1) = edges[i];
+                ColorEqualityOracle_Nbit(colorsRegister[2*v0 .. 2*v0+1], 
+                                        colorsRegister[2*v1 .. 2*v1+1], conflicts[i]);
+            }
+        } apply {
+            // If all the edges are colored properly, conflicts should be in state |0...0⟩
+            (ControlledOnInt(0, X))(conflicts, target);
+        }
     }
 }
-
